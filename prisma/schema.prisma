@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url = env("DATABASE_URL")
+}
+
+model Article {
+  id          Int        @id @default(autoincrement()) @db.UnsignedInt
+  designation String     @db.VarChar(30)
+  marque      String     @db.VarChar(20)
+  reference   String     @db.VarChar(30) @unique
+  qtestock    Int
+  prix        Float
+  imageart    String     @db.VarChar(255)
+  scategorie  Scategorie @relation(fields: [scategorieID], references: [id], onUpdate: Restrict, map: "articles_scategorieid_foreign")
+  scategorieID Int       @db.UnsignedInt
+  created_at  String?    @db.VarChar(24)
+  updated_at  String?    @db.VarChar(24)
+
+  @@index([scategorieID], map: "articles_scategorieid_foreign")
+}
+
+model Category {
+  id              Int         @id @default(autoincrement()) @db.UnsignedInt
+  nomcategorie    String      @unique(map: "categories_nomcategorie_unique") @db.VarChar(30)
+  imagecategorie  String      @db.VarChar(255)
+  created_at      String?     @db.VarChar(24)
+  updated_at      String?     @db.VarChar(24)
+  scategories     Scategorie[] 
+}
+
+model Scategorie {
+  id               Int         @id @default(autoincrement()) @db.UnsignedInt
+  nomscategorie    String      @db.VarChar(255)
+  imagescategorie  String      @db.VarChar(255)
+  categorie        Category    @relation(fields: [categorieID], references: [id], onUpdate: Restrict, map: "scategories_categorieid_foreign")
+  categorieID      Int         @db.UnsignedInt
+  created_at       String?     @db.VarChar(24)
+  updated_at       String?     @db.VarChar(24)
+  articles         Article[]
+  
+  @@index([categorieID], map: "scategories_categorieid_foreign")
+}
+
+model User {
+  id          Int     @id @default(autoincrement()) @db.UnsignedInt
+  name        String  @db.VarChar(255)
+  email       String  @unique(map: "users_email_unique") @db.VarChar(255)
+  password    String  @db.VarChar(255)
+  created_at  String? @db.VarChar(24)
+  updated_at  String? @db.VarChar(24)
+}
